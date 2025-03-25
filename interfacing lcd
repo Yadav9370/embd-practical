@@ -1,3 +1,5 @@
+#Clock Frequency 11.0592
+
 #include<reg51.h> 
 
 sbit rs = P1^0;  
@@ -62,4 +64,3 @@ void delay(unsigned int time)
     unsigned int i;  
     for(i = 0; i < time * 500; i++); // Reduced delay for faster execution
 }  
-
