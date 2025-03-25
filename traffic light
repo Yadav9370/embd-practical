@@ -1,0 +1,44 @@
+#clock frequency 11.0592
+
+#include <reg51.h>
+
+// Traffic Light 1
+sbit red1 = P1^0;
+sbit yellow1 = P1^1;
+sbit green1 = P1^2;
+
+// Traffic Light 2
+sbit red2 = P1^3;
+sbit yellow2 = P1^4;
+sbit green2 = P1^5;
+
+// Delay function
+void delay(unsigned int time) {
+    unsigned int i, j;
+    for(i=0; i<time; i++)
+        for(j=0; j<1275; j++);
+}
+
+void main() {
+    while(1) {
+        // Traffic Light 1: GREEN | Traffic Light 2: RED
+        green1 = 1; yellow1 = 0; red1 = 0;
+        red2 = 1; yellow2 = 0; green2 = 0;
+        delay(3000);  // 3 seconds
+
+        // Traffic Light 1: YELLOW | Traffic Light 2: RED
+        green1 = 0; yellow1 = 1; red1 = 0;
+        red2 = 1; yellow2 = 0; green2 = 0;
+        delay(1000);  // 1 second
+
+        // Traffic Light 1: RED | Traffic Light 2: GREEN
+        green1 = 0; yellow1 = 0; red1 = 1;
+        red2 = 0; yellow2 = 0; green2 = 1;
+        delay(3000);  // 3 seconds
+
+        // Traffic Light 1: RED | Traffic Light 2: YELLOW
+        green1 = 0; yellow1 = 0; red1 = 1;
+        red2 = 0; yellow2 = 1; green2 = 0;
+        delay(1000);  // 1 second
+    }
+}
