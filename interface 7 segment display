@@ -1,0 +1,74 @@
+#clock frequency 11.0592
+
+#include <reg51.h>
+
+// Define keypad rows (Outputs)
+sbit R0 = P1^0;
+sbit R1 = P1^1;
+sbit R2 = P1^2;
+sbit R3 = P1^3;
+
+// Define keypad columns (Inputs)
+sbit C0 = P1^4;
+sbit C1 = P1^5;
+sbit C2 = P1^6;
+
+// Function Prototypes
+void delay();
+void seg(unsigned char ch);
+unsigned char scan_keypad();
+
+void main() {
+    unsigned char key;
+    P1 = 0xF0; // Set rows (P1.0 - P1.3) as output, columns (P1.4 - P1.6) as input with pull-ups
+
+    while (1) {
+        key = scan_keypad();
+        if (key != 0xFF) { // If a valid key is detected
+            seg(key);
+        }
+    }
+}
+
+// Function to scan keypad and return 7-segment code
+unsigned char scan_keypad() {
+    // Ensure columns are high (pull-up)
+    C0 = 1; C1 = 1; C2 = 1;
+
+    // **Row 0**
+    R0 = 0; R1 = 1; R2 = 1; R3 = 1; 
+    if (C0 == 0) { delay(); while (C0 == 0); return 0x06; } // 1
+    if (C1 == 0) { delay(); while (C1 == 0); return 0x5B; } // 2
+    if (C2 == 0) { delay(); while (C2 == 0); return 0x4F; } // 3
+
+    // **Row 1**
+    R0 = 1; R1 = 0; R2 = 1; R3 = 1; 
+    if (C0 == 0) { delay(); while (C0 == 0); return 0x66; } // 4
+    if (C1 == 0) { delay(); while (C1 == 0); return 0x6D; } // 5
+    if (C2 == 0) { delay(); while (C2 == 0); return 0x7D; } // 6
+
+    // **Row 2**
+    R0 = 1; R1 = 1; R2 = 0; R3 = 1; 
+    if (C0 == 0) { delay(); while (C0 == 0); return 0x07; } // 7
+    if (C1 == 0) { delay(); while (C1 == 0); return 0x7F; } // 8
+    if (C2 == 0) { delay(); while (C2 == 0); return 0x67; } // 9
+
+    // **Row 3**
+    R0 = 1; R1 = 1; R2 = 1; R3 = 0; 
+    if (C0 == 0) { delay(); while (C0 == 0); return 0x79; } // *
+    if (C1 == 0) { delay(); while (C1 == 0); return 0x3F; } // 0
+    if (C2 == 0) { delay(); while (C2 == 0); return 0x71; } // #
+
+    return 0xFF; // No key pressed
+}
+
+// Function to display number on 7-segment (Common Anode Fix)
+void seg(unsigned char ch) {
+    P2 = ~ch; // If using common anode display
+}
+
+// Small delay function for key debounce
+void delay() {
+    unsigned int i;
+    for (i = 0; i < 30000; i++); // Adjusted for proper debouncing
+}
