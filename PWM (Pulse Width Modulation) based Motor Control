@@ -1,0 +1,82 @@
+#clock frequency:11.0592
+
+#include <reg51.h>
+
+sbit mot = P2^0;  // Motor control pin
+sbit low = P3^0;  // Low-speed button
+sbit avg = P3^1;  // Medium-speed button
+sbit high = P3^2; // High-speed button
+
+unsigned int speed = 0; // Stores selected speed
+
+void delay(unsigned int);
+void pwm_control(unsigned int);
+
+void main()
+{
+    mot = 0; // Motor initially OFF
+
+    while(1)  
+    {  
+        // **LOW SPEED BUTTON PRESSED**
+        if (low == 0)  
+        {  
+            if (speed == 50)  
+                speed = 0;  // Turn OFF if already at low speed  
+            else  
+                speed = 50;  // Set to low speed (25% duty cycle)  
+            
+            while(low == 0); // Wait for button release (debounce)  
+        }  
+
+        // **MEDIUM SPEED BUTTON PRESSED**
+        if (avg == 0)  
+        {  
+            if (speed == 100)  
+                speed = 0;  // Turn OFF if already at medium speed  
+            else  
+                speed = 100;  // Set to medium speed (50% duty cycle)  
+            
+            while(avg == 0);  
+        }  
+
+        // **HIGH SPEED BUTTON PRESSED**
+        if (high == 0)  
+        {  
+            if (speed == 200)  
+                speed = 0;  // Turn OFF if already at high speed  
+            else  
+                speed = 200;  // Set to high speed (100% duty cycle)  
+            
+            while(high == 0);  
+        }  
+
+        if (speed > 0)  
+            pwm_control(speed); // Control motor speed  
+        else  
+            mot = 0; // Motor OFF  
+    }  
+}  
+
+// **PWM-Based Speed Control**
+void pwm_control(unsigned int speed)  
+{  
+    unsigned int i;  
+    for (i = 0; i < 200; i++)  
+    {  
+        if (i < speed)  
+            mot = 1;  // Motor ON  
+        else  
+            mot = 0;  // Motor OFF  
+
+        delay(1);  // Small delay for PWM effect  
+    }  
+}  
+
+// **Delay Function**  
+void delay(unsigned int d1)  
+{  
+    unsigned int d2;  
+    while (d1--)  
+        for (d2 = 0; d2 < 120; d2++);  
+}  
