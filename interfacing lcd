@@ -1,0 +1,65 @@
+#include<reg51.h> 
+
+sbit rs = P1^0;  
+sbit rw = P1^1;  
+sbit en = P1^2;  
+
+void lcdcmd(unsigned char);  
+void lcddata(unsigned char);  
+void delay(unsigned int);  // Delay function with parameter
+
+void main()  
+{  
+    P2 = 0x00; // Output declaration, data lines D0-D7 connected to P2
+
+    // **LCD Initialization**
+    lcdcmd(0x38); // 5x7 matrix, 2-line display
+    delay(5);
+    lcdcmd(0x01); // Clear screen
+    delay(5);
+    lcdcmd(0x0E); // Cursor blinking
+    delay(5);
+    lcdcmd(0x0C); // Display ON, Cursor OFF
+    delay(5);
+    lcdcmd(0x81); // Move cursor to first line, first position
+    delay(5);
+
+    // **Print "Akash" on LCD**
+    lcddata('A'); delay(3);
+    lcddata('K'); delay(3);
+    lcddata('A'); delay(3);
+    lcddata('S'); delay(3);
+    lcddata('H'); delay(3);
+
+    while(1); // Infinite loop to hold display
+}  
+
+// **Function to send a command to LCD**  
+void lcdcmd(unsigned char val)  
+{  
+    P2 = val;  
+    rs = 0;  
+    rw = 0;  
+    en = 1;  
+    delay(2);  
+    en = 0;  
+}  
+
+// **Function to send data to LCD**  
+void lcddata(unsigned char val)  
+{  
+    P2 = val;  
+    rs = 1;  
+    rw = 0;  
+    en = 1;  
+    delay(2);  
+    en = 0;  
+}  
+
+// **Optimized Delay Function**  
+void delay(unsigned int time)  
+{  
+    unsigned int i;  
+    for(i = 0; i < time * 500; i++); // Reduced delay for faster execution
+}  
+
