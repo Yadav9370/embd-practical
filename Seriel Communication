@@ -1,0 +1,18 @@
+#clock frequency 11.0592
+
+#include <reg51.h>
+
+void main() 
+{
+    SCON = 0x50;  // Serial mode 1, 8-bit data, 1 stop bit, REN enabled
+    TMOD = 0x20;  // Timer 1, Mode 2 (8-bit auto-reload)
+    TH1 = -3;     // Baud rate 9600 (for 11.0592 MHz crystal)
+    TR1 = 1;      // Start Timer 1
+
+    while(1)      // Continuous loop
+    {
+        SBUF = 'A';   // Transmit character 'A'
+        while(TI == 0); // Wait for transmission to complete
+        TI = 0;        // Clear transmit interrupt flag
+    }
+}
