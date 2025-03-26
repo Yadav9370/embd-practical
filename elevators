@@ -1,0 +1,72 @@
+#clock frequency 11.0592
+
+#include <REG51.H>
+
+int p = 0, q = 10, r = 10; // Initialize variables
+
+// Delay function`
+void delay(int c) {
+    int i, j;
+    for(i = 0; i < 500; i++) {
+        for(j = 0; j < r; j++);
+    }
+}
+
+// Elevator moving up
+void up(int b) {
+    int i, j;
+    for(i = 1; i <= b; i++) {
+        for(j = 0; j < 10; j++) {
+            P3 = 0x01; delay(1);
+            P3 = 0x02; delay(1);
+            P3 = 0x04; delay(1);
+            P3 = 0x08; delay(1);
+            P3 = 0x10; delay(1);
+        }
+        P2 = p + i; // Update position
+    }
+    p += b; // Store new position
+}
+
+// Elevator moving down
+void down(int b) {
+    int i, j;
+    for(i = 1; i <= b; i++) {
+        for(j = 0; j < q; j++) {
+            P3 = 0x10; delay(1);
+            P3 = 0x08; delay(1);
+            P3 = 0x04; delay(1);
+            P3 = 0x02; delay(1);
+            P3 = 0x01; delay(1);
+        }
+        P2 = p - i; // Update position
+    }
+    p -= b; // Store new position
+}
+
+// Elevator control function
+void control(int a) {
+    int difference;
+    if(a > p) {
+        difference = a - p;
+        up(difference);
+    } else if(a < p) {
+        difference = p - a;
+        down(difference);
+    }
+}
+
+// Main function
+void main() {
+    int p1;
+    P2 = p; // Set initial position
+
+    while(1) {
+        if(P0 == 0x02) { p1 = 1; control(1); }
+        if(P0 == 0x04) { p1 = 2; control(2); }
+        if(P0 == 0x08) { p1 = 3; control(3); }
+        if(P0 == 0x10) { p1 = 4; delay(1); control(4); }
+        if(P0 == 0x20) { p1 = 5; control(5); }
+        if(P0 == 0x01) { p1 = 0; control(0); }
+    }
+}
